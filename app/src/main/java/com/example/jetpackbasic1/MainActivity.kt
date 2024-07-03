@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +54,7 @@ private fun StartScreen(onButtonClick: () -> Unit) {
 
 @Composable
 fun MyApp(modifier: Modifier) {
-    var isBoardingMessageShowed by remember {
+    var isBoardingMessageShowed by rememberSaveable {
         mutableStateOf(false)
     }
     if (isBoardingMessageShowed)
@@ -76,7 +77,7 @@ private fun Greetings(modifier: Modifier = Modifier, list: List<String> = List(1
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    var isExpanded = remember {
+    var isExpanded = rememberSaveable  {
         mutableStateOf(false)
     }
 
