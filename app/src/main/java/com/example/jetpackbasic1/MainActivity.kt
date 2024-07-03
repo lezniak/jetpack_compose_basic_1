@@ -18,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,9 +55,13 @@ fun MyApp(
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    var isExpanded = remember {
+        mutableStateOf(false)
+    }
+
     Surface(color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp)) {
         Row() {
-            Column(Modifier.weight(1f)) {
+            Column(Modifier.weight(1f).padding(if (isExpanded.value) 50.dp else 0.dp)) {
                 Text(
                     text = "Hello"
                 )
@@ -64,12 +70,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 )
             }
             Button(
-                onClick = { } ,
+                onClick = { isExpanded.value = !isExpanded.value } ,
                 modifier = Modifier
                     .weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text("Show more",color = MaterialTheme.colorScheme.primary)
+                Text(if (isExpanded.value) "Show less" else "Show more",color = MaterialTheme.colorScheme.primary)
             }
         }
 
