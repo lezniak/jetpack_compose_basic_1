@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import com.example.jetpackbasic1.ui.theme.JetpackBasic1Theme
 
@@ -40,12 +44,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 private fun StartScreen(onButtonClick: () -> Unit) {
     Surface(color = Color.White) {
-        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Column(
+            Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(text = "Welcome to the Basics Codelab")
-            Button(onClick = onButtonClick ) {
+            Button(onClick = onButtonClick) {
                 Text(text = "Continue")
             }
         }
@@ -60,14 +69,15 @@ fun MyApp(modifier: Modifier) {
     if (isBoardingMessageShowed)
         Greetings(modifier)
     else
-        StartScreen(){
+        StartScreen() {
             isBoardingMessageShowed = !isBoardingMessageShowed
         }
 
 
 }
+
 @Composable
-private fun Greetings(modifier: Modifier = Modifier, list: List<String> = List(1000) { "$it" }){
+private fun Greetings(modifier: Modifier = Modifier, list: List<String> = List(1000) { "$it" }) {
     LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
         items(items = list) { name ->
             Greeting(name = name)
@@ -77,16 +87,23 @@ private fun Greetings(modifier: Modifier = Modifier, list: List<String> = List(1
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    var isExpanded = rememberSaveable  {
+    var isExpanded by rememberSaveable {
         mutableStateOf(false)
     }
-
-    Surface(color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp)) {
+    val extraPadding by animateDpAsState(
+        if (isExpanded) 48.dp else 0.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)
+    )
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp)
+    ) {
         Row() {
             Column(
                 Modifier
                     .weight(1f)
-                    .padding(if (isExpanded.value) 50.dp else 0.dp)) {
+                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
+            ) {
                 Text(
                     text = "Hello"
                 )
@@ -95,12 +112,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 )
             }
             Button(
-                onClick = { isExpanded.value = !isExpanded.value } ,
+                onClick = { isExpanded = !isExpanded },
                 modifier = Modifier
                     .weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text(if (isExpanded.value) "Show less" else "Show more",color = MaterialTheme.colorScheme.primary)
+                Text(
+                    if (isExpanded) "Show less" else "Show more",
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
 
@@ -119,6 +139,6 @@ fun GreetingPreview() {
 @Composable
 fun StartScreenPrev() {
     JetpackBasic1Theme {
-        StartScreen(  ) {}
+        StartScreen() {}
     }
 }
